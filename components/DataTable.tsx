@@ -10,9 +10,9 @@ export default function DataTable({ headers, rows, maxRows = 20 }: DataTableProp
   const visibleRows = rows.slice(0, maxRows);
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-200">
+    <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-sm">
       <table className="min-w-full text-sm">
-        <thead className="bg-zinc-100">
+        <thead className="bg-zinc-50">
           <tr>
             {headers.map((h) => (
               <th key={h} className="px-3 py-2 text-left font-semibold text-zinc-700 whitespace-nowrap">
@@ -23,9 +23,9 @@ export default function DataTable({ headers, rows, maxRows = 20 }: DataTableProp
         </thead>
         <tbody>
           {visibleRows.map((row, i) => (
-            <tr key={i} className="border-t border-zinc-100 even:bg-zinc-50">
+            <tr key={i} className="border-t border-zinc-100 even:bg-zinc-50/60 hover:bg-blue-50/40">
               {headers.map((h) => (
-                <td key={h} className="px-3 py-2 whitespace-nowrap">
+                <td key={h} className="px-3 py-2 whitespace-nowrap text-zinc-700">
                   {row[h] === null || row[h] === undefined ? "—" : String(row[h])}
                 </td>
               ))}

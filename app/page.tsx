@@ -34,6 +34,15 @@ export default function Home() {
     }
   }
 
+  function handleReset() {
+    setCleaned(null);
+    setAnalysis(null);
+    setFileName("");
+    setError(null);
+  }
+
+  const hasResult = cleaned && analysis;
+
   return (
     <div className="min-h-screen bg-zinc-50 px-6 py-12">
       <main className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -44,15 +53,15 @@ export default function Home() {
           </p>
         </div>
 
-        <FileUpload onFileSelected={handleFile} isLoading={isLoading} />
+        {!hasResult && <FileUpload onFileSelected={handleFile} isLoading={isLoading} />}
 
         {error && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>
         )}
 
-        {cleaned && analysis && (
+        {hasResult && (
           <>
-            <div className="flex flex-wrap items-center gap-4 rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-600">
+            <div className="flex flex-wrap items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 text-sm text-zinc-600 shadow-sm">
               <span className="font-medium text-zinc-800">{fileName}</span>
               <span>{cleaned.rows.length} rows</span>
               <span>{cleaned.headers.length} columns</span>
@@ -62,6 +71,12 @@ export default function Home() {
               {cleaned.removedDuplicates > 0 && (
                 <span className="text-amber-600">{cleaned.removedDuplicates} duplicates removed</span>
               )}
+              <button
+                onClick={handleReset}
+                className="ml-auto rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-500 hover:border-zinc-300 hover:text-zinc-700"
+              >
+                ✕ Remove &amp; upload another
+              </button>
             </div>
 
             <section>

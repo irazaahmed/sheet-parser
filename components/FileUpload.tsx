@@ -27,9 +27,13 @@ export default function FileUpload({ onFileSelected, isLoading }: FileUploadProp
         setIsDragging(false);
         handleFile(e.dataTransfer.files?.[0]);
       }}
-      onClick={() => inputRef.current?.click()}
-      className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-12 text-center cursor-pointer transition-colors ${
-        isDragging ? "border-blue-500 bg-blue-50" : "border-zinc-300 hover:border-zinc-400"
+      onClick={() => !isLoading && inputRef.current?.click()}
+      className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-12 text-center transition-colors ${
+        isLoading
+          ? "cursor-wait border-zinc-200 bg-zinc-50"
+          : isDragging
+            ? "cursor-pointer border-blue-500 bg-blue-50"
+            : "cursor-pointer border-zinc-300 hover:border-zinc-400"
       }`}
     >
       <input
@@ -37,9 +41,17 @@ export default function FileUpload({ onFileSelected, isLoading }: FileUploadProp
         type="file"
         accept=".csv,.xlsx,.xls"
         className="hidden"
+        disabled={isLoading}
         onChange={(e) => handleFile(e.target.files?.[0])}
       />
-      <span className="text-3xl">📄</span>
+      {isLoading ? (
+        <span
+          className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-blue-500"
+          aria-label="Loading"
+        />
+      ) : (
+        <span className="text-3xl">📄</span>
+      )}
       <p className="font-medium text-zinc-700">
         {isLoading ? "Processing..." : "Drag & drop CSV/Excel file, ya click karke select karein"}
       </p>

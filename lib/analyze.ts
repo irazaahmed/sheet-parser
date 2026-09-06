@@ -4,6 +4,7 @@ import { inferColumnType } from "./cleanData";
 export interface ColumnSummary {
   header: string;
   type: "number" | "date" | "text";
+  aggregatable?: boolean;
   total?: number;
   average?: number;
   min?: number;
@@ -18,6 +19,12 @@ export interface AnalysisResult {
   columns: ColumnSummary[];
 }
 
+// Score/rate-style columns (0-100 difficulty, per-click cost, ratios) are
+// numeric but summing them across rows produces a meaningless number --
+// only count-like columns (Volume, Traffic, Clicks) should be totaled.
+const NON_ADDITIVE_HEADER_PATTERN =
+  /difficulty|\bcpc\b|\bcps\b|\bctr\b|score|rate|ratio|percent|%|index|rating|density/i;
+
 export function analyzeData(headers: string[], rows: SheetRow[]): AnalysisResult {
   const columns: ColumnSummary[] = headers.map((header) => {
     const type = inferColumnType(rows, header);
@@ -29,6 +36,7 @@ export function analyzeData(headers: string[], rows: SheetRow[]): AnalysisResult
       return {
         header,
         type,
+        aggregatable: !NON_ADDITIVE_HEADER_PATTERN.test(header),
         total,
         average: nums.length ? total / nums.length : 0,
         min: nums.length ? Math.min(...nums) : 0,
@@ -50,7 +58,10 @@ export function analyzeData(headers: string[], rows: SheetRow[]): AnalysisResult
       header,
       type,
       uniqueValues: counts.size,
-      topValues,
+      // A "top values" chart is only informative when values actually
+      // repeat; for near-unique columns (e.g. Keyword) every bar would
+      // show count 1, so leave topValues off entirely.
+      topValues: topValues[0]?.count > 1 ? topValues : undefined,
     };
   });
 
