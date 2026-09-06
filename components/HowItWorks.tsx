@@ -3,38 +3,37 @@ const STEPS = [
     icon: "📤",
     color: "from-blue-500 to-indigo-500",
     title: "Upload",
-    description: "CSV ya Excel (.xlsx/.xls) file drag-drop karein, ya click karke select karein.",
+    description: "Drag & drop a CSV or Excel (.xlsx/.xls) file, or click to select one.",
   },
   {
     icon: "🧹",
     color: "from-emerald-500 to-teal-500",
     title: "Auto-Clean",
     description:
-      "Encoding (UTF-8/UTF-16) aur delimiter khud detect hota hai. Empty rows aur duplicates hat jate hain.",
+      "Encoding (UTF-8/UTF-16) and delimiter are detected automatically. Empty rows and duplicates are removed.",
   },
   {
     icon: "📊",
     color: "from-amber-500 to-orange-500",
     title: "Analyze",
     description:
-      "Har column ka type pehchana jata hai — numbers ka total/average, categories ka breakdown.",
+      "Each column's type is detected — totals/averages for numbers, breakdowns for categories.",
   },
   {
     icon: "👀",
     color: "from-fuchsia-500 to-pink-500",
     title: "Preview",
-    description: "Cleaned data pura table mein dekhein, charts aur stat cards ke sath.",
+    description: "Browse the full cleaned data table alongside charts and stat cards.",
   },
 ];
 
 export default function HowItWorks() {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-zinc-800">Ye tool kya karta hai?</h2>
+      <h2 className="text-lg font-semibold text-zinc-800">What does this tool do?</h2>
       <p className="mt-1 text-sm text-zinc-500">
-        Sheet Parser aapki spreadsheet file ko upload hote hi 4 steps mein clean, samajhne-layak
-        insights mein badal deta hai — Ahrefs/Semrush jaisi bhari, ajeeb-encoded exports bhi
-        support karta hai.
+        Sheet Parser turns your spreadsheet into clean, understandable insights in 4 steps as soon
+        as you upload it — it even handles heavy, oddly-encoded exports like Ahrefs/Semrush.
       </p>
       <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {STEPS.map((step, i) => (

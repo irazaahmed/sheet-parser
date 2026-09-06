@@ -67,3 +67,24 @@ export function analyzeData(headers: string[], rows: SheetRow[]): AnalysisResult
 
   return { rowCount: rows.length, columnCount: headers.length, columns };
 }
+
+// Used by the custom chart picker, where the user explicitly asks to chart
+// a column -- unlike analyzeData's auto-detected charts, this doesn't hide
+// near-unique columns since the user already knows what they want to see.
+export function computeTopValues(
+  rows: SheetRow[],
+  header: string,
+  limit = 8
+): { label: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const v = row[header];
+    if (v === null || v === undefined || v === "") continue;
+    const key = String(v);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([label, count]) => ({ label, count }));
+}

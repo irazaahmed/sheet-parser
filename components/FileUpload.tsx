@@ -55,7 +55,7 @@ export default function FileUpload({ onFileSelected, isLoading }: FileUploadProp
         </span>
       )}
       <p className="font-medium text-zinc-700">
-        {isLoading ? "Processing..." : "Drag & drop CSV/Excel file, ya click karke select karein"}
+        {isLoading ? "Processing..." : "Drag & drop a CSV/Excel file, or click to select one"}
       </p>
       <p className="text-sm text-zinc-400">Supported: .csv, .xlsx, .xls (max 10MB)</p>
     </div>
