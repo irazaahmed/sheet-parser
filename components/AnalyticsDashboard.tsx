@@ -4,12 +4,22 @@ import { AnalysisResult, ColumnSummary } from "@/lib/analyze";
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+
+const CARD_ACCENTS = [
+  "from-blue-500 to-indigo-500",
+  "from-violet-500 to-purple-500",
+  "from-emerald-500 to-teal-500",
+  "from-amber-500 to-orange-500",
+];
+
+const CHART_PALETTE = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
 
 export default function AnalyticsDashboard({ analysis }: { analysis: AnalysisResult }) {
   const numberColumns = analysis.columns.filter((c) => c.type === "number");
@@ -22,20 +32,23 @@ export default function AnalyticsDashboard({ analysis }: { analysis: AnalysisRes
     .sort((a, b) => Number(b.aggregatable) - Number(a.aggregatable))
     .slice(0, 2);
 
+  const headlineCards = [
+    { icon: "📋", label: "Total Rows", value: analysis.rowCount.toLocaleString() },
+    { icon: "📐", label: "Total Columns", value: analysis.columnCount.toString() },
+    ...headlineColumns.map((c) => ({
+      icon: c.aggregatable ? "📈" : "🎯",
+      label: c.aggregatable ? `Total ${c.header}` : `Avg ${c.header}`,
+      value: (c.aggregatable ? c.total ?? 0 : c.average ?? 0).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      }),
+    })),
+  ];
+
   return (
     <div className="flex flex-col gap-8">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard icon="📋" label="Total Rows" value={analysis.rowCount.toLocaleString()} />
-        <StatCard icon="📐" label="Total Columns" value={analysis.columnCount.toString()} />
-        {headlineColumns.map((c) => (
-          <StatCard
-            key={c.header}
-            icon={c.aggregatable ? "📈" : "🎯"}
-            label={c.aggregatable ? `Total ${c.header}` : `Avg ${c.header}`}
-            value={(c.aggregatable ? c.total ?? 0 : c.average ?? 0).toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-            })}
-          />
+        {headlineCards.map((card, i) => (
+          <StatCard key={card.label} accent={CARD_ACCENTS[i % CARD_ACCENTS.length]} {...card} />
         ))}
       </div>
 
@@ -70,28 +83,52 @@ export default function AnalyticsDashboard({ analysis }: { analysis: AnalysisRes
 function ChartCard({ column }: { column: ColumnSummary }) {
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h3 className="mb-4 font-semibold text-zinc-700">Top {column.header}</h3>
+      <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-700">
+        <span className="h-4 w-1 rounded-full bg-gradient-to-b from-indigo-500 to-pink-500" />
+        Top {column.header}
+      </h3>
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={column.topValues} layout="vertical" margin={{ left: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
           <XAxis type="number" allowDecimals={false} />
           <YAxis type="category" dataKey="label" width={120} />
-          <Tooltip />
-          <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+          <Tooltip cursor={{ fill: "rgba(99,102,241,0.06)" }} />
+          <Bar dataKey="count" radius={[0, 6, 6, 0]}>
+            {column.topValues?.map((_, i) => (
+              <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-function StatCard({ icon, label, value }: { icon: string; label: string; value: string }) {
+function StatCard({
+  icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+  accent: string;
+}) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center gap-2">
-        <span className="text-lg">{icon}</span>
-        <p className="text-xs text-zinc-400">{label}</p>
+    <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
+      <div className={`h-1.5 w-full bg-gradient-to-r ${accent}`} />
+      <div className="p-4">
+        <div className="flex items-center gap-2">
+          <span
+            className={`flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br ${accent} text-sm`}
+          >
+            {icon}
+          </span>
+          <p className="text-xs text-zinc-400">{label}</p>
+        </div>
+        <p className="mt-2 text-xl font-bold text-zinc-800">{value}</p>
       </div>
-      <p className="mt-1 text-xl font-bold text-zinc-800">{value}</p>
     </div>
   );
 }
